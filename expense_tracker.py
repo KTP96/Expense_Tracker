@@ -2,7 +2,7 @@ import json
 
 file_name = "expense_list.json"
 
-def create_expense():
+def create_expense(expense_list):
     while True:
         try:
             expense_count = int(input("How many expenses do you want to enter?"))
@@ -25,7 +25,7 @@ def create_expense():
     
                     else:
                         expense_category = input("Enter the Category of expense: ").strip().lower()
-                        expenses.append(
+                        expense_list.append(
                             {
                                 "expense_desc":expense_desc,
                                 "expense_amt":expense_amount,
@@ -33,7 +33,7 @@ def create_expense():
                             }
                         )
                         break
-            save_expenses(expenses)
+            save_expenses(expense_list)
             break
 
 def view_expenses(expense_list):
@@ -44,12 +44,12 @@ def view_expenses(expense_list):
         total_amount += expense['expense_amt']
     print(f"Total expense amount entered is: {total_amount:.2f}")
 
-def view_category_expenses():
+def view_category_expenses(expense_list):
     category = input("Which category would you like to view ?").strip().lower()
     print(f"Expenses in {category}:")
     category_total = 0
     found = False
-    for expense in expenses:
+    for expense in expense_list:
         if expense['expense_category'] == category:
             print(f"{expense['expense_desc']} [{expense['expense_category']}]:{expense['expense_amt']:.2f}")
             category_total += expense["expense_amt"]
@@ -98,22 +98,22 @@ def save_expenses(expense_list):
     with open(file_name, "w") as file:
         json.dump(expense_list,file,indent=2)
 
-def delete_expenses():
-        if not expenses:
+def delete_expenses(expense_list):
+        if not expense_list:
             print("The expense list is empty")
             return
         
         else:
-            for i, expense in enumerate(expenses,1 ):
+            for i, expense in enumerate(expense_list,1 ):
                 print(f"{i}. {expense['expense_desc']}: {expense['expense_amt']:.2f}")
+        
         while True:
             try:
                 choice = int(input(f"Enter the expense number to delete (0 to cancel)"))
-                print(f"length:{len(expenses)}" )
-                if choice > 0 and choice <= len(expenses):
-                    delete_expense = expenses[choice - 1]
-                    expenses.pop(choice - 1 )
-                    save_expenses(expenses)
+                if choice > 0 and choice <= len(expense_list):
+                    delete_expense = expense_list[choice - 1]
+                    expense_list.pop(choice - 1 )
+                    save_expenses(expense_list)
                     print(f"{delete_expense['expense_desc']} expense is deleted")
 
                 elif choice == 0:
@@ -128,12 +128,12 @@ def delete_expenses():
             else:
                 break
 
-def main():
+def main(expenses):
     while True:
         option = input(f"\nExpense Tracker \n1. Add an expense \n2. View all expenses\n3. Filter by category\n4. Delete an expense \n5. Expense summary by category \n6. Exit  \n\nChoose an option:")
 
         if option == "1":
-            create_expense()
+            create_expense(expenses)
 
         elif option == "2":
             if not expenses:
@@ -142,10 +142,10 @@ def main():
                 view_expenses(expenses)
 
         elif option == "3":
-            view_category_expenses()
+            view_category_expenses(expenses)
 
         elif option == "4":
-            delete_expenses()
+            delete_expenses(expenses)
 
         elif option == "5":
             summarize_expenses(expenses)
@@ -158,4 +158,4 @@ def main():
 
 if __name__=="__main__":
     expenses = load_expenses()
-    main()
+    main(expenses)
