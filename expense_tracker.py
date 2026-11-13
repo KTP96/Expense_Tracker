@@ -57,19 +57,12 @@ def view_category_expenses(expense_list):
     print(f"Category_Total: {category_total:.2f}") if found else print("No expenses found in this category")
 
 def summarize_expenses(expense_list):
-    expense_summary={}
 
     if not expense_list:
         print("The expense list is empty")
         return
       
-    for expense in expense_list:
-        category = expense['expense_category']
-        if category in expense_summary:
-            expense_summary[category] += expense['expense_amt']
-
-        else:
-            expense_summary[category] = expense['expense_amt']
+    expense_summary = calculate_category_totals(expense_list)
 
     print("Spending by category: ")
     total_spending = 0
@@ -79,6 +72,17 @@ def summarize_expenses(expense_list):
        
     print()
     print(f"Total spending:{total_spending:.2f}")
+
+def calculate_category_totals(expense_list):
+    expense_summary={}
+    for expense in expense_list:
+        category = expense['expense_category']
+        if category in expense_summary:
+            expense_summary[category] += expense['expense_amt']
+     
+        else:
+            expense_summary[category] = expense['expense_amt']
+    return expense_summary
 
 def load_expenses():
     try:
