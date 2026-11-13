@@ -1,4 +1,5 @@
 import json
+import math
 
 file_name = "expense_list.json"
 
@@ -14,27 +15,42 @@ def create_expense(expense_list):
                 
         else:
             for i in range(0,expense_count):
-                expense_desc = input("Enter the Description:")
-                while True:
-                    try:
-                        expense_amount = float(input(f"Enter the amount spent on {expense_desc}"))
-                        if expense_amount <= 0:
-                            raise ValueError
-                    except ValueError as e:
-                        print("Please enter a valid number")
-    
-                    else:
-                        expense_category = input("Enter the Category of expense: ").strip().lower()
-                        expense_list.append(
-                            {
-                                "expense_desc":expense_desc,
-                                "expense_amt":expense_amount,
-                                "expense_category":expense_category
-                            }
-                        )
-                        break
+                expense_desc = get_nonempty_input("Enter the description: ", "Description")
+                expense_amount = get_positive_amt(f"Enter the amount spent on {expense_desc}")
+                expense_category = get_nonempty_input("Enter the Category of expense: ","Category").lower()
+                expense_list.append(
+                    {
+                        "expense_desc":expense_desc,
+                        "expense_amt":expense_amount,
+                        "expense_category":expense_category
+                    }
+                )
+            
             save_expenses(expense_list)
             break
+
+def get_nonempty_input(prompt, detail):
+        while True:
+            expense_detail = input(prompt).strip()
+            if expense_detail == '':
+                print(f"The {detail} cannnot be empty. Please enter the {detail}. ")
+            
+            else:
+                return expense_detail
+
+def get_positive_amt(prompt):
+    while True:
+        try:
+            expense_amt = float(input(prompt))
+            if expense_amt <= 0 or not math.isfinite(expense_amt) :
+                raise ValueError
+                        
+        except ValueError as e:
+            print("Please enter a Valid Number")
+
+        else:
+            return expense_amt
+            
 
 def view_expenses(expense_list):
     print("Expenses:")
@@ -160,6 +176,6 @@ def main(expenses):
         else:
             print("Invalid Option. Please try again")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     expenses = load_expenses()
     main(expenses)
